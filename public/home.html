@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calendar</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="sidebar-title">calendar app</div>
+    <nav class="sidebar-nav">
+      <a href="/">Home</a>
+      <a href="/settings">Settings</a>
+      <a href="#" id="sidebar-login-link">Connect Google</a>
+      <a href="/logout">Logout</a>
+    </nav>
+  </aside>
+
+
+  <div id="month-row">
+    <div id="month">Month</div>
+    <div id="btn1">
+      <button type="button" id="prev-month-btn">Prev</button>
+      <button type="button" id="next-month-btn">Next</button>
+    </div>
+  </div>
+
+  <div class="calendar-block">
+    <table class="calendar-table" cellspacing="0">
+      <thead>
+        <tr>
+          <th>sun</th>
+          <th>mon</th>
+          <th>tue</th>
+          <th>wed</th>
+          <th>thu</th>
+          <th>fri</th>
+          <th>sat</th>
+        </tr>
+      </thead>
+      <tbody id="calendar-body"></tbody>
+    </table>
+  </div>
+
+  <div class="calendar-form">
+    <div class="settings-section form-section">
+      <h3>Add Event</h3>
+      <form id="event-form">
+        <div class="form-grid">
+          <input id="event-title" type="text" placeholder="Event title" required>
+          <input id="event-date" type="date" required>
+          <input id="event-start" type="time" required>
+          <input id="event-end" type="time" required>
+        </div>
+        <textarea id="event-description" placeholder="Description (optional)"></textarea>
+        <div class="settings-actions">
+          <button type="submit" class="settings-btn-primary">Add event</button>
+        </div>
+      </form>
+      <p id="form-message"></p>
+    </div>
+  </div>
+  <div id="event-sidebar" class="event-sidebar hidden">
+  <div class="event-sidebar-header">
+    <h3 id="event-sidebar-date">Events</h3>
+    <button id="close-event-sidebar" type="button">Close</button>
+  </div>
+
+  <div id="event-sidebar-list" class="event-sidebar-list"></div>
+</div>
+
+  <script src="/app.js"></script>
+</body>
+</html>

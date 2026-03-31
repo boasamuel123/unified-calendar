@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="sidebar-title">calendar app</div>
+    <nav class="sidebar-nav">
+      <a href="/">Home</a>
+      <a href="/settings">Settings</a>
+      <a href="/auth/google">Connect Google</a>
+      <a href="/logout">Logout</a>
+    </nav>
+  </aside>
+
+  <h2 id="set-header">Settings</h2>
+
+  <div class="content-block">
+    <aside class="panel-sidebar">
+      <div class="panel-sidebar-title">preferences</div>
+      <nav class="panel-sidebar-nav">
+        <a href="#general">General</a>
+        <a href="#calendar">Calendar</a>
+        <a href="#account">Account</a>
+      </nav>
+    </aside>
+
+    <main class="settings-main">
+      <div class="settings-section" id="general">
+        <h3 class="settings-page-title">General</h3>
+        <p class="settings-page-subtitle">Basic preferences for your calendar app.</p>
+
+        <div class="settings-row">
+          <div class="settings-row-label">Show weekends</div>
+          <input type="checkbox" checked>
+        </div>
+
+        <div class="settings-row">
+          <div class="settings-row-label">Default view</div>
+          <select class="settings-select">
+            <option>Month</option>
+            <option>Week</option>
+            <option>Day</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="settings-section" id="calendar">
+        <h3>Calendar</h3>
+
+        <div class="settings-row">
+          <div class="settings-row-label">Timezone</div>
+          <select class="settings-select">
+            <option>Europe/London</option>
+            <option>UTC</option>
+            <option>America/New_York</option>
+          </select>
+        </div>
+
+        <div class="settings-row">
+          <div class="settings-row-label">Start week on Monday</div>
+          <input type="checkbox">
+        </div>
+      </div>
+
+      <div class="settings-section" id="account">
+        <h3>Account</h3>
+
+        <div class="settings-row">
+          <div class="settings-row-label">Google Calendar connection</div>
+          <a href="/auth/google"><button type="button">Connect</button></a>
+        </div>
+
+        <div class="settings-actions">
+          <button class="settings-btn-secondary" type="button">Cancel</button>
+          <button class="settings-btn-primary" type="button">Save changes</button>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>
