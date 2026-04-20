@@ -4,6 +4,9 @@ const express = require('express');
 const session = require('express-session');
 const path = require('path');
 const { google } = require('googleapis');
+const { createDAVClient } = require('tsdav');
+const ical = require('node-ical');
+
 
 const app = express();
 
@@ -169,4 +172,122 @@ const PORT = 3000;
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
+});
+
+app.delete('/delete-event/:id', async (req, res) => {
+  const eventId = req.params.id;
+
+  await calendar.events.delete({
+    calendarId: 'primary',
+    eventId
+  });
+
+  res.json({ ok: true });
+});
+// IOS Calendar serverside
+app.get('/apple/connect-page', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'apple-connect.html'));
+});
+
+async function getAppleClient(req) {
+  if (!req.session.appleCalendar) {
+    throw new Error('Apple Calendar not connected');
+  }
+
+  const { appleId, appPassword } = req.session.appleCalendar;
+
+  return await createDAVClient({
+    serverUrl: 'https://caldav.icloud.com',
+    credentials: {
+      username: appleId,
+      password: appPassword
+    },
+    authMethod: 'Basic',
+    defaultAccountType: 'caldav'
+  });
+}
+
+app.post('/apple/connect', async (req, res) => {
+  try {
+    const { appleId, appPassword } = req.body;
+
+    if (!appleId || !appPassword) {
+      return res.status(400).json({ error: 'Missing Apple ID or app-specific password' });
+    }
+
+    const client = await createDAVClient({
+      serverUrl: 'https://caldav.icloud.com',
+      credentials: {
+        username: appleId,
+        password: appPassword
+      },
+      authMethod: 'Basic',
+      defaultAccountType: 'caldav'
+    });
+
+    const calendars = await client.fetchCalendars();
+
+    req.session.appleCalendar = {
+      appleId,
+      appPassword
+    };
+
+    res.json({
+      ok: true,
+      calendars: calendars.map(cal => ({
+        url: cal.url,
+        displayName: cal.displayName || 'Apple Calendar'
+      }))
+    });
+  } catch (err) {
+    console.error('APPLE CONNECT ERROR:', err.response?.data || err.message || err);
+    res.status(500).json({ error: 'Could not connect Apple Calendar' });
+  }
+});
+
+app.get('/apple/status', (req, res) => {
+  res.json({ connected: !!req.session.appleCalendar });
+});
+
+app.get('/apple/events', async (req, res) => {
+  try {
+    const client = await getAppleClient(req);
+    const calendars = await client.fetchCalendars();
+
+    const allEvents = [];
+
+    for (const calendar of calendars) {
+      const calendarObjects = await client.fetchCalendarObjects({ calendar });
+
+      for (const object of calendarObjects) {
+        const parsed = ical.sync.parseICS(object.data);
+
+        for (const key of Object.keys(parsed)) {
+          const item = parsed[key];
+
+          if (!item || item.type !== 'VEVENT') continue;
+
+          allEvents.push({
+            id: item.uid || key,
+            title: item.summary || 'Untitled Event',
+            description: item.description || '',
+            start: item.start ? new Date(item.start).toISOString() : null,
+            end: item.end ? new Date(item.end).toISOString() : null,
+            allDay: !!item.datetype,
+            source: 'apple'
+          });
+        }
+      }
+    }
+
+    res.json(allEvents);
+  } catch (err) {
+    console.error('APPLE EVENTS ERROR:', err.response?.data || err.message || err);
+    res.status(500).json({ error: 'Could not fetch Apple events' });
+  }
+});
+
+app.get('/apple/disconnect', (req, res) => {
+  delete req.session.appleCalendar;
+  res.redirect('/settings');
 });

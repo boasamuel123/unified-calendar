@@ -6,9 +6,14 @@
     "start": "node server.js"
   },
   "dependencies": {
+    "@azure/msal-node": "^5.1.1",
+    "axios": "^1.14.0",
     "dotenv": "^17.2.0",
     "express": "^4.21.2",
     "express-session": "^1.18.1",
-    "googleapis": "^150.0.1"
+    "googleapis": "^150.0.1",
+    "ical": "^0.8.0",
+    "node-ical": "^0.25.6",
+    "tsdav": "^2.1.8"
   }
 }
